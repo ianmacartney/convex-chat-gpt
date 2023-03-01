@@ -1,5 +1,7 @@
 # ChatGPT Convex demo
 
+![Example](./example.png)
+
 This example app demonstrates how to use the
 [OpenAI ChatGPT API](https://platform.openai.com/docs/guides/chat) with
 [Convex](https://convex.dev) to implement a chat.
@@ -11,13 +13,8 @@ Features:
 - You can make new identities.
 - Inputs are checked for offensive input using the moderation api.
 
-This uses [Convex actions](https://docs.convex.dev/using/actions) to make requests
-to OpenAI's API.
-
-It allows the user to type a chat message, like `/dall-e cute cat`, and have it
-send a dall-e generated image of a cute cat in the chat. wombat show up in the
-chat stream. It builds on the Convex
-[tutorial](https://github.com/get-convex/convex/tree/main/npm-packages/demos/tutorial).
+This uses [Convex actions](https://docs.convex.dev/using/actions) to make
+requests to OpenAI's API.
 
 ## Running the App
 
