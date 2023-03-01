@@ -1,14 +1,18 @@
-# Dall-E Storage & Action Example App
+# ChatGPT Convex demo
 
-This example app demonstrates how to use
-[Convex storage](https://docs.convex.dev/using/file-storage) and
-[actions](https://docs.convex.dev/using/actions) together to save an image in
-Convex that you download in an action. By default, Dall-E only generates images
-that last an hour, so to maintain access to the image, we
-[store the image in Convex](./convex/sendDallE.js) and store the `storageId`
-[with the message](./convex/sendMessage.js). To show the image, we turn the
-`storageId` into a url to the Convex-hosted image
-[on demand](./convex/listMessages.js).
+This example app demonstrates how to use the
+[OpenAI ChatGPT API](https://platform.openai.com/docs/guides/chat) with
+[Convex](https://convex.dev) to implement a chat.
+
+Features:
+- You can chat and get responses from the Chat GPT api.
+- You can start new threads to reset your conversation with Chat GPT.
+- You can specify what the chat identity is, and change it mid-thread.
+- You can make new identities.
+- Inputs are checked for offensive input using the moderation api.
+
+This uses [Convex actions](https://docs.convex.dev/using/actions) to make requests
+to OpenAI's API.
 
 It allows the user to type a chat message, like `/dall-e cute cat`, and have it
 send a dall-e generated image of a cute cat in the chat. wombat show up in the
