@@ -1,0 +1,7 @@
+{
+  "project": "gpt3-chat",
+  "team": "ianhmacartney",
+  "prodUrl": "https://careful-tarsier-389.convex.cloud",
+  "functions": "convex/",
+  "authInfo": []
+}
