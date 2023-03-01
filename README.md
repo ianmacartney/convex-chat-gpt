@@ -4,7 +4,8 @@
 
 This example app demonstrates how to use the
 [OpenAI ChatGPT API](https://platform.openai.com/docs/guides/chat) with
-[Convex](https://convex.dev) to implement a chat.
+[Convex](https://convex.dev) to implement a chat. Convex stores the messages and
+runs server-side functions to interact with OpenAI.
 
 Features:
 - You can chat and get responses from the Chat GPT api.
