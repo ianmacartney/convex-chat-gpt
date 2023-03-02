@@ -27,6 +27,8 @@ function AddIdentity() {
             value={newIdentityInstructions}
             onChange={(event) => setNewIdentityInstructions(event.target.value)}
             placeholder="GPT3 Instructions"
+            rows={2}
+            cols={40}
           />
           <input
             type="submit"
