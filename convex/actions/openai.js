@@ -1,39 +1,38 @@
-import fetch from "node-fetch";
 import { Configuration, OpenAIApi } from "openai";
 import { action } from "../_generated/server";
 
-export const moderate = action(async ({ runMutation }, message, messageId) => {
-  const fail = (reason) =>
-    runMutation("messages:update", messageId, {
-      error: reason,
-    }).then(() => {
-      throw new Error(reason);
-    });
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    await fail(
-      "️Add your OPENAI_API_KEY as an env variable in the " +
-        "[dashboard](https://dasboard.convex.dev)"
-    );
-  }
-  const configuration = new Configuration({ apiKey });
-  const openai = new OpenAIApi(configuration);
+export const moderateIdentity = action(
+  async ({ runMutation }, instructions, identityId) => {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      await runMutation(
+        "identity:flag",
+        identityId,
+        "️Add your OPENAI_API_KEY as an env variable in the " +
+          "[dashboard](https://dasboard.convex.dev)"
+      );
+      return;
+    }
+    const configuration = new Configuration({ apiKey });
+    const openai = new OpenAIApi(configuration);
 
-  // Check if the message is offensive.
-  const modResponse = await openai.createModeration({
-    input: message,
-  });
-  const modResult = modResponse.data.results[0];
-  if (modResult.flagged) {
-    await fail(
-      "Your message was flagged: " +
+    // Check if the message is offensive.
+    const modResponse = await openai.createModeration({
+      input: instructions,
+    });
+    const modResult = modResponse.data.results[0];
+    if (modResult.flagged) {
+      await runMutation(
+        "identity:flag",
+        identityId,
         Object.entries(modResult.categories)
-          .filter(([category, flagged]) => flagged)
+          .filter(([, flagged]) => flagged)
           .map(([category]) => category)
           .join(", ")
-    );
+      );
+    }
   }
-});
+);
 
 export const gpt3 = action(
   async ({ runMutation }, instructions, messages, messageId) => {

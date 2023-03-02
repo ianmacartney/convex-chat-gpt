@@ -1,19 +1,34 @@
 import { query, mutation } from "./_generated/server";
 
 export const list = query(async ({ db }) => {
-  const identities = await db.query("identities").collect();
+  const identities = await db
+    .query("identities")
+    .filter((q) => q.eq(q.field("flagged"), null))
+    .collect();
   return identities.map((identity) => identity.name);
 });
 
-export const add = mutation(async ({ db }, name, instructions) => {
+export const add = mutation(async ({ db, scheduler }, name, instructions) => {
   const existing = await db
     .query("identities")
     .filter((q) => q.eq(q.field("name"), name))
     .unique();
+  let identityId;
   if (existing) {
+    identityId = existing._id;
     await db.patch(existing._id, { instructions });
-    return existing._id;
   } else {
-    return db.insert("identities", { name, instructions });
+    identityId = await db.insert("identities", { name, instructions });
   }
+  scheduler.runAfter(
+    0,
+    "actions/openai:moderateIdentity",
+    instructions,
+    identityId
+  );
+  return identityId;
+});
+
+export const flag = mutation(async ({ db }, identityId, reason) => {
+  db.patch(identityId, { flagged: reason });
 });
