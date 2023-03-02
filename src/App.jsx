@@ -41,30 +41,84 @@ function AddIdentity() {
   );
 }
 
-export default function App() {
+function Thread({ threadId, messages }) {
   const identities = useQuery("identity:list") || [];
   const [identityName, setIdentityName] = useState();
-  useEffect(() => {
-    if (identities.length && !identityName) {
-      setIdentityName(identities[0]);
-    }
-  }, [identities]);
-
-  const messages = useQuery("messages:list") || [];
   const [newMessageText, setNewMessageText] = useState("");
   const sendMessage = useMutation("messages:send");
-
-  const latestThread = useQuery("threads:latest") || null;
-  const newThread = useMutation("threads:add");
-  const newThreadPending = !latestThread?._id.equals(
-    messages[messages.length - 1]?.threadId
-  );
-
+  useEffect(() => {
+    if (identities.length && !identityName) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage && identities.indexOf(lastMessage.identityName) !== -1) {
+        setIdentityName(lastMessage.identityName);
+      } else {
+        setIdentityName(identities[0]);
+      }
+    }
+  }, [messages, identities]);
   async function handleSendMessage(event) {
     event.preventDefault();
     setNewMessageText("");
-    await sendMessage(newMessageText, identityName, latestThread?._id);
+    await sendMessage(newMessageText, identityName, threadId);
   }
+  return (
+    <>
+      <ul>
+        {messages.map((message) => (
+          <li key={message._id.toString()}>
+            <span>{message.identityName ?? message.author}:</span>
+            <span>
+              {message.error ? (
+                <>⚠️{message.error}</>
+              ) : (
+                message.body?.split("\n").map((line, i) => (
+                  <React.Fragment key={line + i}>
+                    {i ? <br /> : null}
+                    {line}
+                  </React.Fragment>
+                )) ?? "..."
+              )}
+            </span>
+            <span>
+              {new Date(
+                message.updatedAt ?? message._creationTime
+              ).toLocaleTimeString()}
+            </span>
+          </li>
+        ))}
+        {messages.length === 0 ? <li>New thread...</li> : null}
+      </ul>
+      <form onSubmit={handleSendMessage}>
+        <select
+          value={identityName}
+          onChange={(e) => setIdentityName(e.target.value)}
+        >
+          {identities.map((name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
+        <input
+          value={newMessageText}
+          onChange={(event) => setNewMessageText(event.target.value)}
+          placeholder="Write a message…"
+        />
+        <input type="submit" value="Send" disabled={!newMessageText} />
+      </form>
+    </>
+  );
+}
+
+export default function App() {
+  const messages = useQuery("messages:list") || [];
+
+  const latestThread = useQuery("threads:latest") || null;
+  const newThread = useMutation("threads:add");
+  const newThreadPending =
+    latestThread &&
+    !latestThread?._id.equals(messages[messages.length - 1]?.threadId);
+
   return (
     <main>
       <h1>Convex Chat-GPT</h1>
@@ -84,67 +138,26 @@ export default function App() {
           }
           return threads;
         }, [])
-        .map((threadMessages, index, threads) => (
+        .map((messages, index, threads) => (
           <details key={"thread" + index} open={index === threads.length - 1}>
-            <summary>{threadMessages[0]?.body}</summary>
-            <ul>
-              {threadMessages.map((message) => (
-                <li key={message._id.toString()}>
-                  <span>{message.identityName ?? message.author}:</span>
-                  <span>
-                    {message.error ? (
-                      <>⚠️{message.error}</>
-                    ) : (
-                      message.body?.split("\n").map((line, i) => (
-                        <React.Fragment key={line + i}>
-                          {i ? <br /> : null}
-                          {line}
-                        </React.Fragment>
-                      )) ?? "..."
-                    )}
-                  </span>
-                  <span>
-                    {new Date(
-                      message.updatedAt ?? message._creationTime
-                    ).toLocaleTimeString()}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <summary>{messages[0]?.body}</summary>
+            <Thread messages={messages} threadId={messages[0].threadId} />
           </details>
         ))}
       {newThreadPending && (
-        <ul>
-          <li>...</li>
-        </ul>
+        <>
+          <Thread messages={[]} threadId={latestThread?._id} />
+        </>
       )}
-      <form onSubmit={handleSendMessage}>
-        <select
-          value={identityName}
-          onChange={(e) => setIdentityName(e.target.value)}
-        >
-          {identities.map((name) => (
-            <option key={name} value={name}>
-              {name}
-            </option>
-          ))}
-        </select>
-        <input
-          value={newMessageText}
-          onChange={(event) => setNewMessageText(event.target.value)}
-          placeholder="Write a message…"
-        />
-        <input type="submit" value="Send" disabled={!newMessageText} />
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            newThread();
-          }}
-          disabled={latestThread && newThreadPending}
-        >
-          New Thread
-        </button>
-      </form>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          newThread();
+        }}
+        disabled={newThreadPending}
+      >
+        Start New Thread
+      </button>
       <AddIdentity />
     </main>
   );
