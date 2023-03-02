@@ -140,7 +140,7 @@ export default function App() {
             e.preventDefault();
             newThread();
           }}
-          disabled={newThreadPending}
+          disabled={threadId && newThreadPending}
         >
           New Thread
         </button>
