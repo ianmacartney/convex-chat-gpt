@@ -53,12 +53,10 @@ export const gpt3 = action(
     const openai = new OpenAIApi(configuration);
 
     // Check if the message is offensive.
-    console.log("checking " + messages[messages.length - 1].body);
     const modResponse = await openai.createModeration({
       input: messages[messages.length - 1].body,
     });
     const modResult = modResponse.data.results[0];
-    console.log(modResult);
     if (modResult.flagged) {
       await runMutation("messages:update", messages[messages.length - 1]._id, {
         error:
