@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useMutation, useQuery } from "../convex/_generated/react";
 
 function AddIdentity() {
@@ -85,7 +85,7 @@ export default function App() {
           return threads;
         }, [])
         .map((threadMessages, index, threads) => (
-          <details open={index === threads.length - 1}>
+          <details key={"thread" + index} open={index === threads.length - 1}>
             <summary>{threadMessages[0]?.body}</summary>
             <ul>
               {threadMessages.map((message) => (
@@ -96,10 +96,10 @@ export default function App() {
                       <>⚠️{message.error}</>
                     ) : (
                       message.body?.split("\n").map((line, i) => (
-                        <>
+                        <React.Fragment key={line + i}>
                           {i ? <br /> : null}
                           {line}
-                        </>
+                        </React.Fragment>
                       )) ?? "..."
                     )}
                   </span>
