@@ -9,7 +9,7 @@ export const moderateIdentity = action(
         "identity:flag",
         identityId,
         "️Add your OPENAI_API_KEY as an env variable in the " +
-          "[dashboard](https://dasboard.convex.dev)"
+          "[dashboard](https://dashboard.convex.dev)"
       );
       return;
     }
