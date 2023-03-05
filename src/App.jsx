@@ -115,15 +115,13 @@ export default function App() {
       <h1>Convex Chat-GPT</h1>
       {messages
         .reduce((threads, message) => {
-          if (threads.length === 0) {
-            return [[message]];
-          }
-          const end = threads.length - 1;
-          if (
-            threads[end][0].threadId?.toString() ===
-            message.threadId?.toString()
-          ) {
-            threads[end].push(message);
+          const thread = threads.find(
+            (threadMessages) =>
+              threadMessages[0].threadId?.toString() ===
+              message.threadId?.toString()
+          );
+          if (thread) {
+            thread.push(message);
           } else {
             threads.push([message]);
           }
