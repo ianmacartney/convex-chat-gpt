@@ -67,17 +67,8 @@ function Thread({ threadId, messages }) {
         {messages.map((message) => (
           <li key={message._id.toString()}>
             <span>{message.identityName ?? message.author}:</span>
-            <span>
-              {message.error ? (
-                <>⚠️{message.error}</>
-              ) : (
-                message.body?.split("\n").map((line, i) => (
-                  <React.Fragment key={line + i}>
-                    {i ? <br /> : null}
-                    {line}
-                  </React.Fragment>
-                )) ?? "..."
-              )}
+            <span style={{ whiteSpace: "pre-wrap" }}>
+              {message.error ? "⚠️ " + message.error : message.body ?? "..."}
             </span>
             <span>
               {new Date(
