@@ -27,7 +27,7 @@ npm run dev
 ```
 
 Create a free account on openai.com and create your
-[OpenAI API secret key](https://beta.openai.com/account/api-keys), and set it as
+[OpenAI API secret key](https://platform.openai.com/account/api-keys), and set it as
 an [environment variable](https://docs.convex.dev/using/environment-variables)
 with the name `OPENAI_API_KEY` via the
 [Convex dashboard](https://dashboard.convex.dev/).
