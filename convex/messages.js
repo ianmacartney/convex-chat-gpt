@@ -14,7 +14,8 @@ export const list = query(async ({ db }) => {
 });
 
 export const send = mutation(
-  async ({ db, scheduler }, body, identityName, threadId) => {
+  async ({ db, scheduler, auth }, body, identityName, threadId) => {
+    if (!(await auth.getUserIdentity())) throw new Error("Not authenticated");
     await db.insert("messages", {
       body,
       author: "user",

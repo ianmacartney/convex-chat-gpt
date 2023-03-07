@@ -1,5 +1,37 @@
 import React, { useEffect, useState } from "react";
+import {
+  RedirectToSignIn,
+  SignedIn,
+  SignedOut,
+  UserButton,
+  SignIn,
+  useAuth,
+} from "@clerk/clerk-react";
 import { useMutation, useQuery } from "../convex/_generated/react";
+
+function OrSignIn({ children }) {
+  const [signingIn, setSigningIn] = useState(false);
+  const { isSignedIn, isLoaded } = useAuth();
+
+  return isLoaded && !isSignedIn && signingIn ? (
+    <RedirectToSignIn />
+  ) : (
+    <>
+      <SignedIn>{children}</SignedIn>
+      <SignedOut>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setSigningIn(true);
+          }}
+          disabled={!isLoaded}
+        >
+          Sign In
+        </button>
+      </SignedOut>
+    </>
+  );
+}
 
 function AddIdentity() {
   const addIdentity = useMutation("identity:add");
@@ -30,11 +62,13 @@ function AddIdentity() {
             rows={2}
             cols={40}
           />
-          <input
-            type="submit"
-            value="Add Identity"
-            disabled={!newIdentityName || !newIdentityInstructions}
-          />
+          <OrSignIn>
+            <input
+              type="submit"
+              value="Add Identity"
+              disabled={!newIdentityName || !newIdentityInstructions}
+            />
+          </OrSignIn>
         </form>
       </details>
     </section>
@@ -95,7 +129,9 @@ function Thread({ threadId, messages }) {
           onChange={(event) => setNewMessageText(event.target.value)}
           placeholder="Write a message…"
         />
-        <input type="submit" value="Send" disabled={!newMessageText} />
+        <OrSignIn>
+          <input type="submit" value="Send" disabled={!newMessageText} />
+        </OrSignIn>
       </form>
     </>
   );
@@ -113,6 +149,7 @@ export default function App() {
   return (
     <main>
       <h1>Convex Chat-GPT</h1>
+      <UserButton />
       {messages
         .reduce((threads, message) => {
           const thread = threads.find(
@@ -138,15 +175,17 @@ export default function App() {
           <Thread messages={[]} threadId={latestThread?._id} />
         </>
       )}
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          newThread();
-        }}
-        disabled={newThreadPending}
-      >
-        Start New Thread
-      </button>
+      <OrSignIn>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            newThread();
+          }}
+          disabled={newThreadPending}
+        >
+          Start New Thread
+        </button>
+      </OrSignIn>
       <AddIdentity />
     </main>
   );
