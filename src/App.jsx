@@ -26,7 +26,7 @@ function OrSignIn({ children }) {
           }}
           disabled={!isLoaded}
         >
-          Sign In
+          Sign In First
         </button>
       </SignedOut>
     </>
