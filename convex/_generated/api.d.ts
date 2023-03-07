@@ -11,7 +11,6 @@
 
 import type { ApiFromModules } from "convex/api";
 import type * as actions_openai from "../actions/openai";
-import type * as causes_queries_messages from "../causes/queries/messages";
 import type * as identity from "../identity";
 import type * as messages from "../messages";
 import type * as threads from "../threads";
@@ -27,7 +26,6 @@ import type * as threads from "../threads";
  */
 export type API = ApiFromModules<{
   "actions/openai": typeof actions_openai;
-  "causes/queries/messages": typeof causes_queries_messages;
   identity: typeof identity;
   messages: typeof messages;
   threads: typeof threads;
