@@ -69,18 +69,29 @@ export const gpt3 = action(
       return;
     }
 
-    const openaiResponse = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
-      messages: [
-        ...messages.map(({ body, author }) => ({
-          role: author,
-          content: body,
-        })),
-        {
+    const gptMessages = [];
+    let lastInstructions = null;
+    for (const { body, author, instructions } of messages) {
+      if (instructions && instructions !== lastInstructions) {
+        gptMessages.push({
           role: "system",
           content: instructions,
-        },
-      ],
+        });
+        lastInstructions = instructions;
+      }
+      gptMessages.push({ role: author, content: body });
+    }
+    if (instructions !== lastInstructions) {
+      gptMessages.push({
+        role: "system",
+        content: instructions,
+      });
+      lastInstructions = instructions;
+    }
+
+    const openaiResponse = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: gptMessages,
     });
     if (openaiResponse.status !== 200) {
       await fail("OpenAI error: " + openaiResponse.statusText);

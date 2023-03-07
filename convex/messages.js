@@ -15,7 +15,7 @@ export const list = query(async ({ db }) => {
 
 export const send = mutation(
   async ({ db, scheduler }, body, identityName, threadId) => {
-    const myMessageId = await db.insert("messages", {
+    await db.insert("messages", {
       body,
       author: "user",
       threadId,
@@ -25,7 +25,6 @@ export const send = mutation(
       .query("identities")
       .filter((q) => q.eq(q.field("name"), identityName))
       .unique();
-    if (!instructions) console.error("Unknown identity: " + identityName);
     const botMessageId = await db.insert("messages", {
       author: "assistant",
       threadId,
@@ -39,6 +38,13 @@ export const send = mutation(
       .filter((q) => q.neq(q.field("body"), null))
       .take(10);
     messages.reverse();
+    await Promise.all(
+      messages.map(async (msg) => {
+        if (msg.identityId) {
+          msg.instructions = (await db.get(msg.identityId)).instructions;
+        }
+      })
+    );
     scheduler.runAfter(
       0,
       "actions/openai:gpt3",
