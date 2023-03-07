@@ -165,7 +165,10 @@ export default function App() {
           return threads;
         }, [])
         .map((messages, index, threads) => (
-          <details key={"thread" + index} open={index === threads.length - 1}>
+          <details
+            key={"thread" + index}
+            open={!newThreadPending && index === threads.length - 1}
+          >
             <summary>{messages[0]?.body}</summary>
             <Thread messages={messages} threadId={messages[0].threadId} />
           </details>
