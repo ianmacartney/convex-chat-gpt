@@ -63,13 +63,11 @@ function AddIdentity() {
             rows={2}
             cols={40}
           />
-          <OrSignIn>
-            <input
-              type="submit"
-              value="Add Identity"
-              disabled={!newIdentityName || !newIdentityInstructions}
-            />
-          </OrSignIn>
+          <input
+            type="submit"
+            value="Add Identity"
+            disabled={!newIdentityName || !newIdentityInstructions}
+          />
         </form>
       </details>
     </section>
@@ -130,9 +128,7 @@ function Thread({ threadId, messages }) {
           onChange={(event) => setNewMessageText(event.target.value)}
           placeholder="Write a message…"
         />
-        <OrSignIn>
-          <input type="submit" value="Send" disabled={!newMessageText} />
-        </OrSignIn>
+        <input type="submit" value="Send" disabled={!newMessageText} />
       </form>
     </>
   );
@@ -153,7 +149,6 @@ export default function App() {
   return (
     <main>
       <h1>Convex Chat-GPT</h1>
-      <UserButton />
       {status === "CanLoadMore" && (
         <button onClick={() => loadMore(100)}>Load More</button>
       )}
@@ -185,17 +180,15 @@ export default function App() {
           <Thread messages={[]} threadId={latestThread?._id} />
         </>
       )}
-      <OrSignIn>
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            newThread();
-          }}
-          disabled={newThreadPending}
-        >
-          Start New Thread
-        </button>
-      </OrSignIn>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          newThread();
+        }}
+        disabled={newThreadPending}
+      >
+        Start New Thread
+      </button>
       <AddIdentity />
     </main>
   );
