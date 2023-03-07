@@ -153,7 +153,9 @@ export default function App() {
   return (
     <main>
       <h1>Convex Chat-GPT</h1>
-      <UserButton />
+      <OrSignIn>
+        <UserButton />
+      </OrSignIn>
       {status === "CanLoadMore" && (
         <button onClick={() => loadMore(100)}>Load More</button>
       )}
