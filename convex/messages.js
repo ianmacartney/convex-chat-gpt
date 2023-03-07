@@ -20,6 +20,7 @@ export const send = mutation(
       body,
       author: "user",
       threadId,
+      user: await auth.getUserIdentity(),
     });
 
     const { instructions, _id: identityId } = await db
