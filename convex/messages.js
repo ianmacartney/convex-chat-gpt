@@ -8,6 +8,7 @@ export const list = query(async ({ db }) => {
         const identity = await db.get(message.identityId);
         message.identityName = identity.name;
       }
+      delete message.user;
       return message;
     })
   );
