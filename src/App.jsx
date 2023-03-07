@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   SignedIn,
   SignedOut,
@@ -6,7 +6,11 @@ import {
   useClerk,
   useAuth,
 } from "@clerk/clerk-react";
-import { useMutation, useQuery } from "../convex/_generated/react";
+import {
+  useMutation,
+  usePaginatedQuery,
+  useQuery,
+} from "../convex/_generated/react";
 
 function OrSignIn({ children }) {
   const { isLoaded } = useAuth();
@@ -135,7 +139,10 @@ function Thread({ threadId, messages }) {
 }
 
 export default function App() {
-  const messages = useQuery("messages:list") || [];
+  const { loadMore, results, status } = usePaginatedQuery("messages:list", {
+    initialNumItems: 100,
+  });
+  const messages = useMemo(() => results.slice().reverse(), [results]);
 
   const latestThread = useQuery("threads:latest") || null;
   const newThread = useMutation("threads:add");
@@ -147,6 +154,9 @@ export default function App() {
     <main>
       <h1>Convex Chat-GPT</h1>
       <UserButton />
+      {status === "CanLoadMore" && (
+        <button onClick={() => loadMore(100)}>Load More</button>
+      )}
       {messages
         .reduce((threads, message) => {
           const thread = threads.find(

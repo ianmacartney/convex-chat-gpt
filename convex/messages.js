@@ -1,18 +1,18 @@
 import { query, mutation } from "./_generated/server";
 
-export const list = query(async ({ db }) => {
-  const messages = await db.query("messages").take(100);
-  return Promise.all(
-    messages.map(async (message) => {
+export const list = query(async ({ db }, opts) => {
+  const resp = await db.query("messages").order("desc").paginate(opts);
+  await Promise.all(
+    resp.page.map(async (message) => {
       if (message.identityId) {
         const identity = await db.get(message.identityId);
         message.identityName = identity.name;
       }
       // Don't leak user details to client
       delete message.user;
-      return message;
     })
   );
+  return resp;
 });
 
 export const send = mutation(
