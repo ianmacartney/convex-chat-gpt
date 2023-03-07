@@ -1,7 +1,7 @@
 import { query, mutation } from "./_generated/server";
 
 export const list = query(async ({ db }) => {
-  const messages = await db.query("messages").collect();
+  const messages = await db.query("messages").take(100);
   return Promise.all(
     messages.map(async (message) => {
       if (message.identityId) {
