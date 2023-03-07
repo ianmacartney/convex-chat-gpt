@@ -1,28 +1,25 @@
 import React, { useEffect, useState } from "react";
 import {
-  RedirectToSignIn,
   SignedIn,
   SignedOut,
   UserButton,
-  SignIn,
+  useClerk,
   useAuth,
 } from "@clerk/clerk-react";
 import { useMutation, useQuery } from "../convex/_generated/react";
 
 function OrSignIn({ children }) {
-  const [signingIn, setSigningIn] = useState(false);
-  const { isSignedIn, isLoaded } = useAuth();
+  const { isLoaded } = useAuth();
+  const clerk = useClerk();
 
-  return isLoaded && !isSignedIn && signingIn ? (
-    <RedirectToSignIn />
-  ) : (
+  return (
     <>
       <SignedIn>{children}</SignedIn>
       <SignedOut>
         <button
           onClick={(e) => {
             e.preventDefault();
-            setSigningIn(true);
+            clerk.openSignIn();
           }}
           disabled={!isLoaded}
         >
