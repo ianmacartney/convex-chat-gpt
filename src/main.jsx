@@ -22,9 +22,12 @@ function ClerkConvexAdapter() {
 
 ReactDOM.render(
   <StrictMode>
-    <ConvexProvider client={convex}>
-      <App />
-    </ConvexProvider>
+    <ClerkProvider publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}>
+      <ConvexProvider client={convex}>
+        <ClerkConvexAdapter />
+        <App />
+      </ConvexProvider>
+    </ClerkProvider>
   </StrictMode>,
   document.getElementById("root")
 );
