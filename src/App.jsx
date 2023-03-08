@@ -156,6 +156,7 @@ export default function App() {
       <OrSignIn>
         <UserButton />
       </OrSignIn>
+      <p>Disclaimer: Any identities here are not real. Just robots.</p>
       {status === "CanLoadMore" && (
         <button onClick={() => loadMore(100)}>Load More</button>
       )}
