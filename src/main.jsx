@@ -17,7 +17,7 @@ function ClerkConvexAdapter() {
         : null
     );
   }, [convex, getToken, isSignedIn]);
-  return <></>;
+  return null;
 }
 
 ReactDOM.render(
