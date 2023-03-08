@@ -18,7 +18,7 @@ export const list = query(async ({ db }, opts) => {
 export const send = mutation(
   async ({ db, scheduler, auth }, body, identityName, threadId) => {
     if (!(await auth.getUserIdentity())) throw new Error("Not authenticated");
-    await db.insert("messages", {
+    const userMessageId = await db.insert("messages", {
       body,
       author: "user",
       threadId,
@@ -49,13 +49,7 @@ export const send = mutation(
         }
       })
     );
-    scheduler.runAfter(
-      0,
-      "actions/openai:gpt3",
-      instructions ?? "You are a helpful assistant.",
-      messages,
-      botMessageId
-    );
+    return { instructions, messages, userMessageId, botMessageId };
   }
 );
 

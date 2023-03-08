@@ -7,6 +7,7 @@ import {
   useAuth,
 } from "@clerk/clerk-react";
 import {
+  useAction,
   useMutation,
   usePaginatedQuery,
   useQuery,
@@ -80,7 +81,7 @@ function Thread({ threadId, messages }) {
   const identities = useQuery("identity:list") || [];
   const [identityName, setIdentityName] = useState();
   const [newMessageText, setNewMessageText] = useState("");
-  const sendMessage = useMutation("messages:send");
+  const sendMessage = useAction("actions/openai:chat");
   useEffect(() => {
     if (identities.length && !identityName) {
       const lastMessage = messages[messages.length - 1];

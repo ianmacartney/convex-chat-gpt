@@ -34,10 +34,12 @@ export const moderateIdentity = action(
   }
 );
 
-export const gpt3 = action(
-  async ({ runMutation }, instructions, messages, messageId) => {
+export const chat = action(
+  async ({ runMutation }, body, identityName, threadId) => {
+    const { instructions, messages, userMessageId, botMessageId } =
+      await runMutation("messages:send", body, identityName, threadId);
     const fail = (reason) =>
-      runMutation("messages:update", messageId, {
+      runMutation("messages:update", botMessageId, {
         error: reason,
       }).then(() => {
         throw new Error(reason);
@@ -54,11 +56,11 @@ export const gpt3 = action(
 
     // Check if the message is offensive.
     const modResponse = await openai.createModeration({
-      input: messages[messages.length - 1].body,
+      input: body,
     });
     const modResult = modResponse.data.results[0];
     if (modResult.flagged) {
-      await runMutation("messages:update", messages[messages.length - 1]._id, {
+      await runMutation("messages:update", userMessageId, {
         error:
           "Your message was flagged: " +
           Object.entries(modResult.categories)
@@ -84,7 +86,7 @@ export const gpt3 = action(
     if (instructions !== lastInstructions) {
       gptMessages.push({
         role: "system",
-        content: instructions,
+        content: instructions ?? "You are a helpful assistant",
       });
       lastInstructions = instructions;
     }
@@ -96,10 +98,8 @@ export const gpt3 = action(
     if (openaiResponse.status !== 200) {
       await fail("OpenAI error: " + openaiResponse.statusText);
     }
-    const body = openaiResponse.data.choices[0].message.content;
-
-    await runMutation("messages:update", messageId, {
-      body,
+    await runMutation("messages:update", botMessageId, {
+      body: openaiResponse.data.choices[0].message.content,
       usage: openaiResponse.data.usage,
       updatedAt: Date.now(),
       ms: Number(openaiResponse.headers["openai-processing-ms"]),
