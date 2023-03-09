@@ -11,12 +11,14 @@ function ClerkConvexAdapter() {
   const { getToken, isSignedIn } = useAuth();
 
   useEffect(() => {
-    convex.setAuth(async () =>
-      isSignedIn
-        ? await getToken({ template: "convex", skipCache: true })
-        : null
-    );
-  }, [convex, getToken, isSignedIn]);
+    if (isSignedIn) {
+      convex.setAuth(async () =>
+        getToken({ template: "convex", skipCache: true })
+      );
+    } else {
+      convex.clearAuth();
+    }
+  }, [getToken, isSignedIn]);
   return null;
 }
 
