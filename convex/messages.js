@@ -40,13 +40,14 @@ export const send = mutation(
       .filter((q) => q.eq(q.field("error"), null))
       .filter((q) => q.eq(q.field("threadId"), threadId))
       .filter((q) => q.neq(q.field("body"), null))
-      .take(10);
+      .take(21); // Take an odd number, since we're skipping the last message.
     messages.reverse();
     await Promise.all(
       messages.map(async (msg) => {
         if (msg.identityId) {
           msg.instructions = (await db.get(msg.identityId)).instructions;
         }
+        delete msg.user;
       })
     );
     return { instructions, messages, userMessageId, botMessageId };
