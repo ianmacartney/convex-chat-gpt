@@ -188,7 +188,7 @@ export default function App() {
             key={"thread" + index}
             open={!newThreadPending && index === threads.length - 1}
           >
-            <summary>{messages[0]?.body}</summary>
+            <summary>{messages[0]?.body?.substring(0, 100)}...</summary>
             <Thread messages={messages} threadId={messages[0].threadId} />
           </details>
         ))}
