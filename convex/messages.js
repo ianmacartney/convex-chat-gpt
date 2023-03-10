@@ -40,7 +40,7 @@ export const send = mutation(
       .filter((q) => q.eq(q.field("error"), null))
       .filter((q) => q.eq(q.field("threadId"), threadId))
       .filter((q) => q.neq(q.field("body"), null))
-      .take(21); // Take an odd number, since we're skipping the last message.
+      .take(21); // 10 pairs of prompt/response and our most recent message.
     messages.reverse();
     await Promise.all(
       messages.map(async (msg) => {
