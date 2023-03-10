@@ -2,35 +2,33 @@ import { Configuration, OpenAIApi } from "openai";
 import { action } from "../_generated/server";
 
 export const moderateIdentity = action(
-  async ({ runMutation }, instructions, identityId) => {
+  async ({ runMutation }, name, instructions) => {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      await runMutation(
-        "identity:flag",
-        identityId,
+      return (
         "️Add your OPENAI_API_KEY as an env variable in the " +
-          "[dashboard](https://dashboard.convex.dev)"
+        "[dashboard](https://dashboard.convex.dev)"
       );
-      return;
     }
     const configuration = new Configuration({ apiKey });
     const openai = new OpenAIApi(configuration);
 
     // Check if the message is offensive.
     const modResponse = await openai.createModeration({
-      input: instructions,
+      input: name + ": " + instructions,
     });
+
     const modResult = modResponse.data.results[0];
     if (modResult.flagged) {
-      await runMutation(
-        "identity:flag",
-        identityId,
+      return (
+        "Flagged: " +
         Object.entries(modResult.categories)
           .filter(([, flagged]) => flagged)
           .map(([category]) => category)
           .join(", ")
       );
     }
+    await runMutation("identity:add", name, instructions);
   }
 );
 
@@ -47,8 +45,8 @@ export const chat = action(
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       await fail(
-        "Add your OPENAI_API_KEY as an env variable in the " +
-          "[dashboard](https://dasboard.convex.dev)"
+        "Add your OPENAI_API_KEY as an env variable in the dashboard:" +
+          "https://dashboard.convex.dev"
       );
     }
     const configuration = new Configuration({ apiKey });

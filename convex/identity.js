@@ -8,7 +8,7 @@ export const list = query(async ({ db }) => {
   return identities.map((identity) => identity.name);
 });
 
-export const add = mutation(async ({ db, scheduler }, name, instructions) => {
+export const add = mutation(async ({ db }, name, instructions) => {
   const existing = await db
     .query("identities")
     .filter((q) => q.eq(q.field("name"), name))
@@ -20,12 +20,6 @@ export const add = mutation(async ({ db, scheduler }, name, instructions) => {
   } else {
     identityId = await db.insert("identities", { name, instructions });
   }
-  scheduler.runAfter(
-    0,
-    "actions/openai:moderateIdentity",
-    instructions,
-    identityId
-  );
   return identityId;
 });
 
