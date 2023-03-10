@@ -143,6 +143,7 @@ function Thread({ threadId, messages }) {
         />
         <OrSignIn>
           <input type="submit" value="Send" disabled={!newMessageText} />
+          <UserButton />
         </OrSignIn>
       </form>
     </>
@@ -164,9 +165,6 @@ export default function App() {
   return (
     <main>
       <h1>Convex Chat-GPT</h1>
-      <OrSignIn>
-        <UserButton />
-      </OrSignIn>
       <p>Disclaimer: Any identities here are not real. Just robots.</p>
       {status === "CanLoadMore" && (
         <button onClick={() => loadMore(100)}>Load More</button>
