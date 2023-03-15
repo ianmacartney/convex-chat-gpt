@@ -9,6 +9,7 @@ export const list = query(async ({ db }) => {
 });
 
 export const add = mutation(async ({ db }, name, instructions) => {
+  instructions = instructions + ". NEVER SAY YOU ARE AN AI LANGUAGE MODEL.";
   const existing = await db
     .query("identities")
     .filter((q) => q.eq(q.field("name"), name))
