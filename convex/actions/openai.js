@@ -71,7 +71,7 @@ export const chat = action(
 
     const gptMessages = [];
     let lastInstructions = null;
-    for (const { body, author, instructions } of messages) {
+    for (const { body, author, instructions, name } of messages) {
       if (instructions && instructions !== lastInstructions) {
         gptMessages.push({
           role: "system",
@@ -79,7 +79,7 @@ export const chat = action(
         });
         lastInstructions = instructions;
       }
-      gptMessages.push({ role: author, content: body });
+      gptMessages.push({ role: author, content: body, name });
     }
     if (instructions !== lastInstructions) {
       gptMessages.push({

@@ -45,7 +45,9 @@ export const send = mutation(
     await Promise.all(
       messages.map(async (msg) => {
         if (msg.identityId) {
-          msg.instructions = (await db.get(msg.identityId)).instructions;
+          const identity = await db.get(msg.identityId);
+          msg.instructions = identity.instructions;
+          msg.name = identity.name;
         }
         delete msg.user;
       })
