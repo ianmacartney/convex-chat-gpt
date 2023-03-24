@@ -20,17 +20,17 @@ export const moderateIdentity = action(
 
     const modResult = modResponse.data.results[0];
     if (modResult.flagged) {
-      return (
-        "Flagged: " +
-        Object.entries(modResult.categories)
-          .filter(([, flagged]) => flagged)
-          .map(([category]) => category)
-          .join(", ")
-      );
+      return "Flagged: " + flaggedCategories(modResult).join(", ");
     }
     await runMutation("identity:add", name, instructions);
   }
 );
+
+const flaggedCategories = (modResult) => {
+  return Object.entries(modResult.categories)
+    .filter(([, flagged]) => flagged)
+    .map(([category]) => category);
+};
 
 export const chat = action(
   async ({ runMutation }, body, identityName, threadId) => {
@@ -61,10 +61,7 @@ export const chat = action(
       await runMutation("messages:update", userMessageId, {
         error:
           "Your message was flagged: " +
-          Object.entries(modResult.categories)
-            .filter(([, flagged]) => flagged)
-            .map(([category]) => category)
-            .join(", "),
+          flaggedCategories(modResult).join(", "),
       });
       return;
     }

@@ -50,6 +50,8 @@ export const send = mutation(
           const identity = await db.get(msg.identityId);
           msg.instructions = identity.instructions;
           msg.name = identity.name;
+        } else {
+          msg.name = msg.user?.givenName;
         }
         delete msg.user;
       })
