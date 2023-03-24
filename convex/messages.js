@@ -6,7 +6,9 @@ export const list = query(async ({ db }, opts) => {
     resp.page.map(async (message) => {
       if (message.identityId) {
         const identity = await db.get(message.identityId);
-        message.identityName = identity.name;
+        message.name = identity.name;
+      } else {
+        message.name = message.user?.givenName;
       }
       // Don't leak user details to client
       delete message.user;
