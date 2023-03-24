@@ -76,7 +76,7 @@ export const chat = action(
         });
         lastInstructions = instructions;
       }
-      gptMessages.push({ role: author, content: body, name });
+      gptMessages.push({ role: author, content: body });
     }
     if (instructions !== lastInstructions) {
       gptMessages.push({
