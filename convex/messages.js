@@ -1,4 +1,4 @@
-import { query, mutation } from "./_generated/server";
+import { query, internalMutation } from "./_generated/server";
 
 export const list = query(async ({ db }, opts) => {
   const resp = await db.query("messages").order("desc").paginate(opts);
@@ -17,7 +17,7 @@ export const list = query(async ({ db }, opts) => {
   return resp;
 });
 
-export const send = mutation(
+export const send = internalMutation(
   async ({ db, auth }, body, identityName, threadId) => {
     if (!(await auth.getUserIdentity())) throw new Error("Not authenticated");
     const userMessageId = await db.insert("messages", {
@@ -57,6 +57,6 @@ export const send = mutation(
   }
 );
 
-export const update = mutation(async ({ db }, messageId, patch) => {
+export const update = internalMutation(async ({ db }, messageId, patch) => {
   await db.patch(messageId, patch);
 });

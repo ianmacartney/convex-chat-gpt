@@ -1,4 +1,4 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation, internalMutation } from "./_generated/server";
 
 export const list = query(async ({ db }) => {
   const identities = await db
@@ -24,6 +24,6 @@ export const add = mutation(async ({ db }, name, instructions) => {
   return identityId;
 });
 
-export const flag = mutation(async ({ db }, identityId, reason) => {
+export const flag = internalMutation(async ({ db }, identityId, reason) => {
   db.patch(identityId, { flagged: reason });
 });
