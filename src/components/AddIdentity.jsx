@@ -19,10 +19,10 @@ export function AddIdentity() {
             e.preventDefault();
             setLoading(true);
             setError(null);
-            const errorMsg = await addIdentity(
-              newIdentityName,
-              newIdentityInstructions
-            );
+            const errorMsg = await addIdentity({
+              name: newIdentityName,
+              instructions: newIdentityInstructions,
+            });
             if (errorMsg) setError(errorMsg);
             setLoading(false);
             setNewIdentityName("");

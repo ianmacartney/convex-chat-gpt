@@ -2,7 +2,7 @@ import { Configuration, OpenAIApi } from "openai";
 import { action } from "../_generated/server";
 
 export const moderateIdentity = action(
-  async ({ runMutation }, name, instructions) => {
+  async ({ runMutation }, { name, instructions }) => {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       return (
@@ -22,7 +22,7 @@ export const moderateIdentity = action(
     if (modResult.flagged) {
       return "Flagged: " + flaggedCategories(modResult).join(", ");
     }
-    await runMutation("identity:add", name, instructions);
+    await runMutation("identity:add", { name, instructions });
   }
 );
 
@@ -33,12 +33,15 @@ const flaggedCategories = (modResult) => {
 };
 
 export const chat = action(
-  async ({ runMutation }, body, identityName, threadId) => {
+  async ({ runMutation }, { body, identityName, threadId }) => {
     const { instructions, messages, userMessageId, botMessageId } =
-      await runMutation("messages:send", body, identityName, threadId);
+      await runMutation("messages:send", { body, identityName, threadId });
     const fail = (reason) =>
-      runMutation("messages:update", botMessageId, {
-        error: reason,
+      runMutation("messages:update", {
+        messageId: botMessageId,
+        patch: {
+          error: reason,
+        },
       }).then(() => {
         throw new Error(reason);
       });
@@ -58,10 +61,13 @@ export const chat = action(
     });
     const modResult = modResponse.data.results[0];
     if (modResult.flagged) {
-      await runMutation("messages:update", userMessageId, {
-        error:
-          "Your message was flagged: " +
-          flaggedCategories(modResult).join(", "),
+      await runMutation("messages:update", {
+        messageId: userMessageId,
+        patch: {
+          error:
+            "Your message was flagged: " +
+            flaggedCategories(modResult).join(", "),
+        },
       });
       return;
     }

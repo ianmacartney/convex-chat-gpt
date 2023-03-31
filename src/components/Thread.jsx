@@ -21,7 +21,7 @@ export function Thread({ threadId, messages }) {
   async function handleSendMessage(event) {
     event.preventDefault();
     setNewMessageText("");
-    await sendMessage(newMessageText, identityName, threadId);
+    await sendMessage({ body: newMessageText, identityName, threadId });
   }
   return (
     <>

@@ -18,7 +18,7 @@ export const list = query(async ({ db }, opts) => {
 });
 
 export const send = internalMutation(
-  async ({ db, auth }, body, identityName, threadId) => {
+  async ({ db, auth }, { body, identityName, threadId }) => {
     if (!(await auth.getUserIdentity())) throw new Error("Not authenticated");
     const userMessageId = await db.insert("messages", {
       body,
@@ -57,6 +57,6 @@ export const send = internalMutation(
   }
 );
 
-export const update = internalMutation(async ({ db }, messageId, patch) => {
+export const update = internalMutation(async ({ db }, { messageId, patch }) => {
   await db.patch(messageId, patch);
 });
