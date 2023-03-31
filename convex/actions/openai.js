@@ -99,11 +99,14 @@ export const chat = action(
     if (openaiResponse.status !== 200) {
       await fail("OpenAI error: " + openaiResponse.statusText);
     }
-    await runMutation("messages:update", botMessageId, {
-      body: openaiResponse.data.choices[0].message.content,
-      usage: openaiResponse.data.usage,
-      updatedAt: Date.now(),
-      ms: Number(openaiResponse.headers["openai-processing-ms"]),
+    await runMutation("messages:update", {
+      messageId: botMessageId,
+      patch: {
+        body: openaiResponse.data.choices[0].message.content,
+        usage: openaiResponse.data.usage,
+        updatedAt: Date.now(),
+        ms: Number(openaiResponse.headers["openai-processing-ms"]),
+      },
     });
   }
 );
