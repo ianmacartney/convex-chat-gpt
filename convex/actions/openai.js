@@ -56,20 +56,24 @@ export const chat = action(
     const openai = new OpenAIApi(configuration);
 
     // Check if the message is offensive.
-    const modResponse = await openai.createModeration({
-      input: body,
-    });
-    const modResult = modResponse.data.results[0];
-    if (modResult.flagged) {
-      await runMutation("messages:update", {
-        messageId: userMessageId,
-        patch: {
-          error:
-            "Your message was flagged: " +
-            flaggedCategories(modResult).join(", "),
-        },
+    try {
+      const modResponse = await openai.createModeration({
+        input: body,
       });
-      return;
+      const modResult = modResponse.data.results[0];
+      if (modResult.flagged) {
+        await runMutation("messages:update", {
+          messageId: userMessageId,
+          patch: {
+            error:
+              "Your message was flagged: " +
+              flaggedCategories(modResult).join(", "),
+          },
+        });
+        return;
+      }
+    } catch (e) {
+      await fail(`${e}`);
     }
 
     const gptMessages = [];
@@ -92,21 +96,22 @@ export const chat = action(
       lastInstructions = instructions;
     }
 
-    const openaiResponse = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
-      messages: gptMessages,
-    });
-    if (openaiResponse.status !== 200) {
-      await fail("OpenAI error: " + openaiResponse.statusText);
+    try {
+      const openaiResponse = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: gptMessages,
+      });
+      await runMutation("messages:update", {
+        messageId: botMessageId,
+        patch: {
+          body: openaiResponse.data.choices[0].message.content,
+          usage: openaiResponse.data.usage,
+          updatedAt: Date.now(),
+          ms: Number(openaiResponse.headers["openai-processing-ms"]),
+        },
+      });
+    } catch (e) {
+      await fail(`OpenAI error: ${e}`);
     }
-    await runMutation("messages:update", {
-      messageId: botMessageId,
-      patch: {
-        body: openaiResponse.data.choices[0].message.content,
-        usage: openaiResponse.data.usage,
-        updatedAt: Date.now(),
-        ms: Number(openaiResponse.headers["openai-processing-ms"]),
-      },
-    });
   }
 );
