@@ -10,9 +10,9 @@
  */
 
 import type { ApiFromModules } from "convex/api";
-import type * as actions_openai from "../actions/openai";
 import type * as identity from "../identity";
 import type * as messages from "../messages";
+import type * as openai from "../openai";
 import type * as threads from "../threads";
 
 /**
@@ -25,8 +25,8 @@ import type * as threads from "../threads";
  * `ConvexReactClient` to create app-specific types.
  */
 export type API = ApiFromModules<{
-  "actions/openai": typeof actions_openai;
   identity: typeof identity;
   messages: typeof messages;
+  openai: typeof openai;
   threads: typeof threads;
 }>;

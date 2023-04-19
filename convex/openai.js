@@ -1,6 +1,6 @@
 "use node";
 import { Configuration, OpenAIApi } from "openai";
-import { action } from "../_generated/server";
+import { action } from "./_generated/server";
 
 export const moderateIdentity = action(
   async ({ runMutation }, { name, instructions }) => {

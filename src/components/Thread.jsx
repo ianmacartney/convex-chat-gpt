@@ -5,7 +5,7 @@ export function Thread({ threadId, messages }) {
   const identities = useQuery("identity:list") || [];
   const [identityName, setIdentityName] = useState();
   const [newMessageText, setNewMessageText] = useState("");
-  const sendMessage = useAction("actions/openai:chat");
+  const sendMessage = useAction("openai:chat");
   useEffect(() => {
     if (identities.length && !identityName) {
       const lastMessage = messages[messages.length - 1];
