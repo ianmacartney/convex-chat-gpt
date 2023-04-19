@@ -17,20 +17,31 @@ Features:
 This uses [Convex actions](https://docs.convex.dev/using/actions) to make
 requests to OpenAI's API.
 
-## Running the App
+## Setting up
 
 Run:
 
 ```
 npm install
-npm run dev
+npx convex init
 ```
+
+This will guide you through making a Convex project.
 
 Create a free account on openai.com and create your
 [OpenAI API secret key](https://platform.openai.com/account/api-keys), and set it as
 an [environment variable](https://docs.convex.dev/using/environment-variables)
 with the name `OPENAI_API_KEY` via the
 [Convex dashboard](https://dashboard.convex.dev/).
+
+
+## Running the App
+
+Run:
+
+```
+npm run dev
+```
 
 Then visit [localhost:3000](http://localhost:3000).
 
