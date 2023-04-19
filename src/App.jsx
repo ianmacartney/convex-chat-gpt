@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useMutation, usePaginatedQuery } from "../convex/_generated/react";
-import { OrSignIn } from "./components/OrSignIn";
 import { AddIdentity } from "./components/AddIdentity";
 import { Thread } from "./components/Thread";
 
@@ -52,17 +51,15 @@ export default function App() {
           <Thread messages={[]} threadId={newThreadId} />
         </>
       )}
-      <OrSignIn>
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            createThread().then(setNewThreadId);
-          }}
-          disabled={newThreadId}
-        >
-          Start New Thread
-        </button>
-      </OrSignIn>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          createThread().then(setNewThreadId);
+        }}
+        disabled={newThreadId}
+      >
+        Start New Thread
+      </button>
       <AddIdentity />
     </main>
   );

@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { UserButton } from "@clerk/clerk-react";
 import { useAction, useQuery } from "../../convex/_generated/react";
-import { OrSignIn } from "./OrSignIn";
 
 export function Thread({ threadId, messages }) {
   const identities = useQuery("identity:list") || [];
@@ -57,10 +55,7 @@ export function Thread({ threadId, messages }) {
           onChange={(event) => setNewMessageText(event.target.value)}
           placeholder="Write a message…"
         />
-        <OrSignIn>
-          <input type="submit" value="Send" disabled={!newMessageText} />
-          <UserButton />
-        </OrSignIn>
+        <input type="submit" value="Send" disabled={!newMessageText} />
       </form>
     </>
   );
