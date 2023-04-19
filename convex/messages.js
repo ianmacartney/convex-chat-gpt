@@ -1,7 +1,10 @@
 import { query, internalMutation } from "./_generated/server";
 
-export const list = query(async ({ db }, opts) => {
-  const resp = await db.query("messages").order("desc").paginate(opts);
+export const list = query(async ({ db }, { paginationOpts }) => {
+  const resp = await db
+    .query("messages")
+    .order("desc")
+    .paginate(paginationOpts);
   await Promise.all(
     resp.page.map(async (message) => {
       if (message.identityId) {
@@ -37,9 +40,9 @@ export const send = internalMutation(
     const messages = await db
       .query("messages")
       .order("desc")
-      .filter((q) => q.eq(q.field("error"), null))
+      .filter((q) => q.eq(q.field("error"), undefined))
       .filter((q) => q.eq(q.field("threadId"), threadId))
-      .filter((q) => q.neq(q.field("body"), null))
+      .filter((q) => q.neq(q.field("body"), undefined))
       .take(21); // 10 pairs of prompt/response and our most recent message.
     messages.reverse();
     await Promise.all(

@@ -1,3 +1,4 @@
+"use node";
 import { Configuration, OpenAIApi } from "openai";
 import { action } from "../_generated/server";
 

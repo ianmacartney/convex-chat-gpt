@@ -3,7 +3,7 @@ import { query, mutation } from "./_generated/server";
 export const list = query(async ({ db }) => {
   const identities = await db
     .query("identities")
-    .filter((q) => q.eq(q.field("flagged"), null))
+    .filter((q) => q.eq(q.field("flagged"), undefined))
     .collect();
   return identities.map((identity) => identity.name);
 });

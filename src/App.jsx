@@ -4,9 +4,13 @@ import { AddIdentity } from "./components/AddIdentity";
 import { Thread } from "./components/Thread";
 
 export default function App() {
-  const { loadMore, results, status } = usePaginatedQuery("messages:list", {
-    initialNumItems: 100,
-  });
+  const { loadMore, results, status } = usePaginatedQuery(
+    "messages:list",
+    {},
+    {
+      initialNumItems: 100,
+    }
+  );
   const messages = useMemo(() => results.slice().reverse(), [results]);
 
   const [newThreadId, setNewThreadId] = useState(null);
