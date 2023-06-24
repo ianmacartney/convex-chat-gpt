@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@vitejs/plugin-react': ^1.3.1
-  convex: 0.13.0
+  convex: 0.17.1
   node-fetch: ^2.6.1
   npm-run-all: ^4.1.5
   openai: ~3.2.0
@@ -11,7 +11,7 @@ specifiers:
   vite: ^2.3.8
 
 dependencies:
-  convex: 0.13.0_sfoxds7t5ydpegc3knd667wn6m
+  convex: 0.17.1_sfoxds7t5ydpegc3knd667wn6m
   node-fetch: 2.6.9
   openai: 3.2.0
   react: 17.0.2
@@ -410,10 +410,6 @@ packages:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
     dev: true
 
-  /base64-js/1.5.1:
-    resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
-    dev: false
-
   /brace-expansion/1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
     dependencies:
@@ -477,8 +473,8 @@ packages:
     resolution: {integrity: sha512-ASFBup0Mz1uyiIjANan1jzLQami9z1PoYSZCiiYW2FczPbenXc45FZdBZLzOT+r6+iciuEModtmCti+hjaAk0A==}
     dev: true
 
-  /convex/0.13.0_sfoxds7t5ydpegc3knd667wn6m:
-    resolution: {integrity: sha512-9YEtY2pWyExnpfS0K7DomY+pdl2i9LgDnN4am4eUkLHQ0u1j7USqmE6AAz3oBWyjsqJuiqyvIEW18K7c/JDtXg==}
+  /convex/0.17.1_sfoxds7t5ydpegc3knd667wn6m:
+    resolution: {integrity: sha512-TiFBL4bx5vVMy+0wRbtnokv9k8cqm+IVlGB2a7d+WXozrMDF0pWXujHbGyE2Tq414cZpRx+BmT8/1BVc/oZ53A==}
     engines: {node: '>=16.15.1', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
@@ -496,7 +492,6 @@ packages:
       react-dom:
         optional: true
     dependencies:
-      base64-js: 1.5.1
       encoding: 0.1.13
       esbuild: 0.15.18
       jwt-decode: 3.1.2
