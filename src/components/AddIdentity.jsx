@@ -1,8 +1,9 @@
+import { api } from "../../convex/_generated/api";
+import { useAction } from "convex/react";
 import React, { useState } from "react";
-import { useAction } from "../../convex/_generated/react";
 
 export function AddIdentity() {
-  const addIdentity = useAction("openai:moderateIdentity");
+  const addIdentity = useAction(api.openai.moderateIdentity);
   const [newIdentityName, setNewIdentityName] = useState("");
   const [newIdentityInstructions, setNewIdentityInstructions] = useState("");
   const [loading, setLoading] = useState(false);

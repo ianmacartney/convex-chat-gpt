@@ -1,20 +1,17 @@
+import { api } from "../convex/_generated/api";
+import { useMutation, usePaginatedQuery } from "convex/react";
 import React, { useEffect, useState, useMemo } from "react";
-import { useMutation, usePaginatedQuery } from "../convex/_generated/react";
 import { AddIdentity } from "./components/AddIdentity";
 import { Thread } from "./components/Thread";
 
 export default function App() {
-  const { loadMore, results, status } = usePaginatedQuery(
-    "messages:list",
-    {},
-    {
-      initialNumItems: 100,
-    }
-  );
+  const { loadMore, results, status } = usePaginatedQuery(api.messages.list, {}, {
+    initialNumItems: 100,
+  });
   const messages = useMemo(() => results.slice().reverse(), [results]);
 
   const [newThreadId, setNewThreadId] = useState(null);
-  const createThread = useMutation("threads:add");
+  const createThread = useMutation(api.threads.add);
   useEffect(() => {
     if (newThreadId && messages.find((m) => newThreadId.equals(m.threadId)))
       setNewThreadId(null);

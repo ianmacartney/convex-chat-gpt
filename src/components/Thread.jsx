@@ -1,11 +1,12 @@
+import { api } from "../../convex/_generated/api";
+import { useAction, useQuery } from "convex/react";
 import React, { useEffect, useState } from "react";
-import { useAction, useQuery } from "../../convex/_generated/react";
 
 export function Thread({ threadId, messages }) {
-  const identities = useQuery("identity:list") || [];
+  const identities = useQuery(api.identity.list) || [];
   const [identityName, setIdentityName] = useState();
   const [newMessageText, setNewMessageText] = useState("");
-  const sendMessage = useAction("openai:chat");
+  const sendMessage = useAction(api.openai.chat);
   useEffect(() => {
     if (identities.length && !identityName) {
       const lastMessage = messages[messages.length - 1];

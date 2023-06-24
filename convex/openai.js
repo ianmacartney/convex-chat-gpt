@@ -1,4 +1,5 @@
 "use node";
+import { api } from "./_generated/api";
 import { Configuration, OpenAIApi } from "openai";
 import { action } from "./_generated/server";
 
@@ -23,7 +24,7 @@ export const moderateIdentity = action(
     if (modResult.flagged) {
       return "Flagged: " + flaggedCategories(modResult).join(", ");
     }
-    await runMutation("identity:add", { name, instructions });
+    await runMutation(api.identity.add, { name, instructions });
   }
 );
 
@@ -36,9 +37,9 @@ const flaggedCategories = (modResult) => {
 export const chat = action(
   async ({ runMutation }, { body, identityName, threadId }) => {
     const { instructions, messages, userMessageId, botMessageId } =
-      await runMutation("messages:send", { body, identityName, threadId });
+      await runMutation(api.messages.send, { body, identityName, threadId });
     const fail = (reason) =>
-      runMutation("messages:update", {
+      runMutation(api.messages.update, {
         messageId: botMessageId,
         patch: {
           error: reason,
@@ -63,7 +64,7 @@ export const chat = action(
       });
       const modResult = modResponse.data.results[0];
       if (modResult.flagged) {
-        await runMutation("messages:update", {
+        await runMutation(api.messages.update, {
           messageId: userMessageId,
           patch: {
             error:
@@ -102,7 +103,7 @@ export const chat = action(
         model: "gpt-3.5-turbo",
         messages: gptMessages,
       });
-      await runMutation("messages:update", {
+      await runMutation(api.messages.update, {
         messageId: botMessageId,
         patch: {
           body: openaiResponse.data.choices[0].message.content,
