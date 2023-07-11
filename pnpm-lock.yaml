@@ -3,7 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@clerk/clerk-react': ^4.12.1
   '@vitejs/plugin-react': ^1.3.1
-  convex: 0.18.0
+  convex: 0.19.0
   node-fetch: ^2.6.1
   npm-run-all: ^4.1.5
   openai: ~3.2.0
@@ -13,7 +13,7 @@ specifiers:
 
 dependencies:
   '@clerk/clerk-react': 4.22.0_react@17.0.2
-  convex: 0.18.0_vsoya3hodwhrqxj4bkpjekqrw4
+  convex: 0.19.0_vsoya3hodwhrqxj4bkpjekqrw4
   node-fetch: 2.6.9
   openai: 3.2.0
   react: 17.0.2
@@ -506,8 +506,8 @@ packages:
     resolution: {integrity: sha512-ASFBup0Mz1uyiIjANan1jzLQami9z1PoYSZCiiYW2FczPbenXc45FZdBZLzOT+r6+iciuEModtmCti+hjaAk0A==}
     dev: true
 
-  /convex/0.18.0_vsoya3hodwhrqxj4bkpjekqrw4:
-    resolution: {integrity: sha512-Ka6mDIcvkUJPiyn+G5Nn2/F9kEj7JFrYcLJt7GczWfn2f4oV4lsN3fragCdANOkgtKBxSc9WsXV4Cdg6HVZYPg==}
+  /convex/0.19.0_vsoya3hodwhrqxj4bkpjekqrw4:
+    resolution: {integrity: sha512-1keeqSkDHFsZGk3bhhN1IAyUvQjUERZE0c+yPnIUzA33DVgSS9efvhl6SQJoW268OrMuQ0icUTyVJwRrURmD8w==}
     engines: {node: '>=16.15.1', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
