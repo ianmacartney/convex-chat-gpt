@@ -26,7 +26,7 @@ export function Thread({ threadId, messages }) {
     <>
       <ul>
         {messages.map((message) => (
-          <li key={message._id.toString()}>
+          <li key={message._id}>
             <span>{message.name ?? message.author}:</span>
             <span style={{ whiteSpace: "pre-wrap" }}>
               {message.error ? "⚠️ " + message.error : message.body ?? "..."}

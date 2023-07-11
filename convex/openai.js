@@ -24,7 +24,7 @@ export const moderateIdentity = action(
     if (modResult.flagged) {
       return "Flagged: " + flaggedCategories(modResult).join(", ");
     }
-    await runMutation(api.identity.add, { name, instructions });
+    await runMutation(internal.identity.add, { name, instructions });
   }
 );
 

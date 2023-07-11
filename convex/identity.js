@@ -1,4 +1,4 @@
-import { query, mutation } from "./_generated/server";
+import { query, internalMutation } from "./_generated/server";
 
 export const list = query(async ({ db }) => {
   const identities = await db
@@ -8,7 +8,7 @@ export const list = query(async ({ db }) => {
   return identities.map((identity) => identity.name);
 });
 
-export const add = mutation(async ({ db }, { name, instructions }) => {
+export const add = internalMutation(async ({ db }, { name, instructions }) => {
   instructions = instructions + ". NEVER SAY YOU ARE AN AI LANGUAGE MODEL.";
   const existing = await db
     .query("identities")
