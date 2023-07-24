@@ -1,9 +1,13 @@
 import { query, mutation } from "./_generated/server";
 
-export const latest = query(async ({ db }) => {
-  return db.query("threads").order("desc").first();
+export const latest = query({
+  handler: async (ctx) => {
+    return ctx.db.query("threads").order("desc").first();
+  },
 });
 
-export const add = mutation(async ({ db }, thread) => {
-  return db.insert("threads", thread || {});
+export const add = mutation({
+  handler: async (ctx, thread) => {
+    return ctx.db.insert("threads", thread || {});
+  },
 });

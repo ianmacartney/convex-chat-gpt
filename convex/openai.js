@@ -3,8 +3,8 @@ import { api, internal } from "./_generated/api";
 import { Configuration, OpenAIApi } from "openai";
 import { action } from "./_generated/server";
 
-export const moderateIdentity = action(
-  async ({ runMutation }, { name, instructions }) => {
+export const moderateIdentity = action({
+  handler: async (ctx, { name, instructions }) => {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       return (
@@ -24,9 +24,9 @@ export const moderateIdentity = action(
     if (modResult.flagged) {
       return "Flagged: " + flaggedCategories(modResult).join(", ");
     }
-    await runMutation(internal.identity.add, { name, instructions });
-  }
-);
+    await ctx.runMutation(internal.identity.add, { name, instructions });
+  },
+});
 
 const flaggedCategories = (modResult) => {
   return Object.entries(modResult.categories)
@@ -34,23 +34,25 @@ const flaggedCategories = (modResult) => {
     .map(([category]) => category);
 };
 
-export const chat = action(
-  async ({ runMutation }, { body, identityName, threadId }) => {
+export const chat = action({
+  handler: async (ctx, { body, identityName, threadId }) => {
     const { instructions, messages, userMessageId, botMessageId } =
-      await runMutation(internal.messages.send, {
+      await ctx.runMutation(internal.messages.send, {
         body,
         identityName,
         threadId,
       });
     const fail = (reason) =>
-      runMutation(internal.messages.update, {
-        messageId: botMessageId,
-        patch: {
-          error: reason,
-        },
-      }).then(() => {
-        throw new Error(reason);
-      });
+      ctx
+        .runMutation(internal.messages.update, {
+          messageId: botMessageId,
+          patch: {
+            error: reason,
+          },
+        })
+        .then(() => {
+          throw new Error(reason);
+        });
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       await fail(
@@ -68,7 +70,7 @@ export const chat = action(
       });
       const modResult = modResponse.data.results[0];
       if (modResult.flagged) {
-        await runMutation(internal.messages.update, {
+        await ctx.runMutation(internal.messages.update, {
           messageId: userMessageId,
           patch: {
             error:
@@ -107,7 +109,7 @@ export const chat = action(
         model: "gpt-3.5-turbo",
         messages: gptMessages,
       });
-      await runMutation(internal.messages.update, {
+      await ctx.runMutation(internal.messages.update, {
         messageId: botMessageId,
         patch: {
           body: openaiResponse.data.choices[0].message.content,
@@ -119,5 +121,5 @@ export const chat = action(
     } catch (e) {
       await fail(`OpenAI error: ${e}`);
     }
-  }
-);
+  },
+});

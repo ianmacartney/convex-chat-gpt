@@ -1,25 +1,29 @@
 import { query, internalMutation } from "./_generated/server";
 
-export const list = query(async ({ db }) => {
-  const identities = await db
-    .query("identities")
-    .filter((q) => q.eq(q.field("flagged"), undefined))
-    .collect();
-  return identities.map((identity) => identity.name);
+export const list = query({
+  handler: async (ctx) => {
+    const identities = await ctx.db
+      .query("identities")
+      .filter((q) => q.eq(q.field("flagged"), undefined))
+      .collect();
+    return identities.map((identity) => identity.name);
+  },
 });
 
-export const add = internalMutation(async ({ db }, { name, instructions }) => {
-  instructions = instructions + ". NEVER SAY YOU ARE AN AI LANGUAGE MODEL.";
-  const existing = await db
-    .query("identities")
-    .filter((q) => q.eq(q.field("name"), name))
-    .unique();
-  let identityId;
-  if (existing) {
-    identityId = existing._id;
-    await db.patch(existing._id, { instructions });
-  } else {
-    identityId = await db.insert("identities", { name, instructions });
-  }
-  return identityId;
+export const add = internalMutation({
+  handler: async (ctx, { name, instructions }) => {
+    instructions = instructions + ". NEVER SAY YOU ARE AN AI LANGUAGE MODEL.";
+    const existing = await ctx.db
+      .query("identities")
+      .filter((q) => q.eq(q.field("name"), name))
+      .unique();
+    let identityId;
+    if (existing) {
+      identityId = existing._id;
+      await ctx.db.patch(existing._id, { instructions });
+    } else {
+      identityId = await ctx.db.insert("identities", { name, instructions });
+    }
+    return identityId;
+  },
 });
