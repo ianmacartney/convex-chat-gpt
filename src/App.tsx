@@ -1,8 +1,9 @@
 import { api } from "../convex/_generated/api";
 import { useMutation, usePaginatedQuery } from "convex/react";
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { AddIdentity } from "./components/AddIdentity";
-import { Thread } from "./components/Thread";
+import { Thread, UIMessage } from "./components/Thread";
+import { Id } from "../convex/_generated/dataModel";
 
 export default function App() {
   const { loadMore, results, status } = usePaginatedQuery(
@@ -14,11 +15,11 @@ export default function App() {
   );
   const messages = useMemo(() => results.slice().reverse(), [results]);
 
-  const [newThreadId, setNewThreadId] = useState(null);
+  const [newThreadId, setNewThreadId] = useState<Id<"threads">>();
   const createThread = useMutation(api.threads.add);
   useEffect(() => {
     if (newThreadId && messages.find((m) => newThreadId === m.threadId))
-      setNewThreadId(null);
+      setNewThreadId(undefined);
   }, [newThreadId, messages]);
 
   return (
@@ -29,7 +30,7 @@ export default function App() {
         <button onClick={() => loadMore(100)}>Load More</button>
       )}
       {messages
-        .reduce((threads, message) => {
+        .reduce<UIMessage[][]>((threads, message) => {
           const thread = threads.find(
             (threadMessages) => threadMessages[0].threadId === message.threadId
           );
@@ -59,7 +60,7 @@ export default function App() {
           e.preventDefault();
           createThread().then(setNewThreadId);
         }}
-        disabled={newThreadId}
+        disabled={!!newThreadId}
       >
         Start New Thread
       </button>

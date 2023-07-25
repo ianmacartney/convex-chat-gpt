@@ -1,28 +1,38 @@
+import { paginationOptsValidator } from "convex/server";
 import { query, internalMutation } from "./_generated/server";
+import { v } from "convex/values";
+import { Doc, Id } from "./_generated/dataModel";
 
 export const list = query({
+  args: { paginationOpts: paginationOptsValidator },
   handler: async (ctx, { paginationOpts }) => {
     const resp = await ctx.db
       .query("messages")
       .order("desc")
       .paginate(paginationOpts);
-    await Promise.all(
+    const page = await Promise.all(
       resp.page.map(async (message) => {
+        let name: string;
         if (message.identityId) {
-          const identity = await ctx.db.get(message.identityId);
-          message.name = identity.name;
+          const identity = (await ctx.db.get(message.identityId))!;
+          name = identity.name;
         } else {
-          message.name = message.user?.givenName;
+          name = message.user?.givenName;
         }
         // Don't leak user details to client
-        delete message.user;
+        return { ...message, name, user: undefined };
       })
     );
-    return resp;
+    return { ...resp, page };
   },
 });
 
 export const send = internalMutation({
+  args: {
+    body: v.string(),
+    identityName: v.string(),
+    threadId: v.id("threads"),
+  },
   handler: async (ctx, { body, identityName, threadId }) => {
     const userMessageId = await ctx.db.insert("messages", {
       body,
@@ -30,30 +40,32 @@ export const send = internalMutation({
       threadId,
     });
 
-    const { instructions, _id: identityId } = await ctx.db
+    const identity = await ctx.db
       .query("identities")
       .filter((q) => q.eq(q.field("name"), identityName))
       .unique();
+    if (!identity) throw new Error("Can't find identity " + identityName);
+    const { instructions, _id: identityId } = identity;
     const botMessageId = await ctx.db.insert("messages", {
       author: "assistant",
       threadId,
       identityId,
     });
-    const messages = await ctx.db
+    const messageDocs = await ctx.db
       .query("messages")
       .order("desc")
       .filter((q) => q.eq(q.field("error"), undefined))
       .filter((q) => q.eq(q.field("threadId"), threadId))
       .filter((q) => q.neq(q.field("body"), undefined))
       .take(21); // 10 pairs of prompt/response and our most recent message.
-    messages.reverse();
-    await Promise.all(
-      messages.map(async (msg) => {
+    const messages = await Promise.all(
+      messageDocs.reverse().map(async (msg) => {
+        let instructions = undefined;
         if (msg.identityId) {
-          const identity = await ctx.db.get(msg.identityId);
-          msg.instructions = identity.instructions;
+          const identity = (await ctx.db.get(msg.identityId))!;
+          instructions = identity.instructions;
         }
-        delete msg.user;
+        return { ...msg, instructions, user: undefined };
       })
     );
     return { instructions, messages, userMessageId, botMessageId };
@@ -61,7 +73,10 @@ export const send = internalMutation({
 });
 
 export const update = internalMutation({
-  handler: async (ctx, { messageId, patch }) => {
-    await ctx.db.patch(messageId, patch);
+  handler: async (
+    ctx,
+    args: { messageId: Id<"messages">; patch: Partial<Doc<"messages">> }
+  ) => {
+    await ctx.db.patch(args.messageId, args.patch);
   },
 });

@@ -1,24 +1,48 @@
 import { api } from "../../convex/_generated/api";
 import { useAction, useQuery } from "convex/react";
 import React, { useEffect, useState } from "react";
+import { Id } from "../../convex/_generated/dataModel";
 
-export function Thread({ threadId, messages }) {
-  const identities = useQuery(api.identity.list) || [];
-  const [identityName, setIdentityName] = useState();
+export type UIMessage = {
+  name: string;
+  author: string;
+  identityId?: Id<"identities">;
+  threadId: Id<"threads">;
+  body?: string;
+  error?: string;
+  updatedAt?: number;
+  _id: Id<"messages">;
+  _creationTime: number;
+};
+
+export function Thread({
+  threadId,
+  messages,
+}: {
+  threadId: Id<"threads">;
+  messages: UIMessage[];
+}) {
+  const identities = useQuery(api.identity.list);
+  const [identityName, setIdentityName] = useState<string>();
   const [newMessageText, setNewMessageText] = useState("");
   const sendMessage = useAction(api.openai.chat);
   useEffect(() => {
-    if (identities.length && !identityName) {
+    if (identities?.length && !identityName) {
       const lastMessage = messages[messages.length - 1];
-      if (lastMessage && identities.indexOf(lastMessage.identityName) !== -1) {
-        setIdentityName(lastMessage.identityName);
+      if (
+        lastMessage?.identityId &&
+        identities.indexOf(lastMessage.name) !== -1
+      ) {
+        if (identityName !== lastMessage.name)
+          setIdentityName(lastMessage.name);
       } else {
         setIdentityName(identities[0]);
       }
     }
-  }, [messages, identities]);
-  async function handleSendMessage(event) {
+  }, [messages, identities, identityName]);
+  async function handleSendMessage(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!identityName) throw new Error("No identity selected");
     setNewMessageText("");
     await sendMessage({ body: newMessageText, identityName, threadId });
   }
@@ -45,7 +69,7 @@ export function Thread({ threadId, messages }) {
           value={identityName}
           onChange={(e) => setIdentityName(e.target.value)}
         >
-          {identities.map((name) => (
+          {identities?.map((name) => (
             <option key={name} value={name}>
               {name}
             </option>

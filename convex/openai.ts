@@ -1,17 +1,25 @@
 "use node";
-import { api, internal } from "./_generated/api";
-import { Configuration, OpenAIApi } from "openai";
+import { internal } from "./_generated/api";
+import {
+  Configuration,
+  CreateModerationResponseResultsInner,
+  OpenAIApi,
+} from "openai";
 import { action } from "./_generated/server";
+import { v } from "convex/values";
+
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error(
+    "Missing OPENAI_API_KEY in environment variables.\n" +
+      "Set it in the project settings in the Convex dashboard:\n" +
+      "    npx convex dashboard\n or https://dashboard.convex.dev"
+  );
+}
 
 export const moderateIdentity = action({
+  args: { name: v.string(), instructions: v.string() },
   handler: async (ctx, { name, instructions }) => {
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      return (
-        "️Add your OPENAI_API_KEY as an env variable in the " +
-        "[dashboard](https://dashboard.convex.dev)"
-      );
-    }
+    const apiKey = process.env.OPENAI_API_KEY!;
     const configuration = new Configuration({ apiKey });
     const openai = new OpenAIApi(configuration);
 
@@ -25,16 +33,22 @@ export const moderateIdentity = action({
       return "Flagged: " + flaggedCategories(modResult).join(", ");
     }
     await ctx.runMutation(internal.identity.add, { name, instructions });
+    return null;
   },
 });
 
-const flaggedCategories = (modResult) => {
+const flaggedCategories = (modResult: CreateModerationResponseResultsInner) => {
   return Object.entries(modResult.categories)
     .filter(([, flagged]) => flagged)
     .map(([category]) => category);
 };
 
 export const chat = action({
+  args: {
+    body: v.string(),
+    identityName: v.string(),
+    threadId: v.id("threads"),
+  },
   handler: async (ctx, { body, identityName, threadId }) => {
     const { instructions, messages, userMessageId, botMessageId } =
       await ctx.runMutation(internal.messages.send, {
@@ -42,7 +56,7 @@ export const chat = action({
         identityName,
         threadId,
       });
-    const fail = (reason) =>
+    const fail = (reason: string) =>
       ctx
         .runMutation(internal.messages.update, {
           messageId: botMessageId,
@@ -86,10 +100,10 @@ export const chat = action({
 
     const gptMessages = [];
     let lastInstructions = null;
-    for (const { body, author, instructions, name } of messages) {
+    for (const { body, author, instructions } of messages) {
       if (instructions && instructions !== lastInstructions) {
         gptMessages.push({
-          role: "system",
+          role: "system" as const,
           content: instructions,
         });
         lastInstructions = instructions;
@@ -98,7 +112,7 @@ export const chat = action({
     }
     if (instructions !== lastInstructions) {
       gptMessages.push({
-        role: "system",
+        role: "system" as const,
         content: instructions ?? "You are a helpful assistant",
       });
       lastInstructions = instructions;
@@ -112,7 +126,7 @@ export const chat = action({
       await ctx.runMutation(internal.messages.update, {
         messageId: botMessageId,
         patch: {
-          body: openaiResponse.data.choices[0].message.content,
+          body: openaiResponse.data.choices[0].message?.content,
           usage: openaiResponse.data.usage,
           updatedAt: Date.now(),
           ms: Number(openaiResponse.headers["openai-processing-ms"]),

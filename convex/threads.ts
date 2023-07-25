@@ -7,6 +7,7 @@ export const latest = query({
 });
 
 export const add = mutation({
+  args: {},
   handler: async (ctx, thread) => {
     return ctx.db.insert("threads", thread || {});
   },

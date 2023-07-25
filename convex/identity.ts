@@ -1,3 +1,4 @@
+import { v } from "convex/values";
 import { query, internalMutation } from "./_generated/server";
 
 export const list = query({
@@ -11,6 +12,7 @@ export const list = query({
 });
 
 export const add = internalMutation({
+  args: { name: v.string(), instructions: v.string() },
   handler: async (ctx, { name, instructions }) => {
     instructions = instructions + ". NEVER SAY YOU ARE AN AI LANGUAGE MODEL.";
     const existing = await ctx.db
