@@ -1,6 +1,7 @@
 import { api } from "../convex/_generated/api";
 import { useMutation, usePaginatedQuery } from "convex/react";
 import { useEffect, useState, useMemo } from "react";
+import { OrSignIn } from "./components/OrSignIn";
 import { AddIdentity } from "./components/AddIdentity";
 import { Thread, UIMessage } from "./components/Thread";
 import { Id } from "../convex/_generated/dataModel";
@@ -55,15 +56,17 @@ export default function App() {
           <Thread messages={[]} threadId={newThreadId} />
         </>
       )}
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          createThread().then(setNewThreadId);
-        }}
-        disabled={!!newThreadId}
-      >
-        Start New Thread
-      </button>
+      <OrSignIn>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            createThread().then(setNewThreadId);
+          }}
+          disabled={!!newThreadId}
+        >
+          Start New Thread
+        </button>
+      </OrSignIn>
       <AddIdentity />
     </main>
   );

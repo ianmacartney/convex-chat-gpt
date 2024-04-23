@@ -34,10 +34,13 @@ export const send = internalMutation({
     threadId: v.id("threads"),
   },
   handler: async (ctx, { body, identityName, threadId }) => {
+    if (!(await ctx.auth.getUserIdentity()))
+      throw new Error("Not authenticated");
     const userMessageId = await ctx.db.insert("messages", {
       body,
       author: "user",
       threadId,
+      user: await ctx.auth.getUserIdentity(),
     });
 
     const identity = await ctx.db

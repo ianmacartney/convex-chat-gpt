@@ -1,7 +1,9 @@
 import { api } from "../../convex/_generated/api";
 import { useAction, useQuery } from "convex/react";
 import React, { useEffect, useState } from "react";
+import { UserButton } from "@clerk/clerk-react";
 import { Id } from "../../convex/_generated/dataModel";
+import { OrSignIn } from "./OrSignIn";
 
 export type UIMessage = {
   name: string;
@@ -80,7 +82,10 @@ export function Thread({
           onChange={(event) => setNewMessageText(event.target.value)}
           placeholder="Write a message…"
         />
-        <input type="submit" value="Send" disabled={!newMessageText} />
+        <OrSignIn>
+          <input type="submit" value="Send" disabled={!newMessageText} />
+          <UserButton />
+        </OrSignIn>
       </form>
     </>
   );

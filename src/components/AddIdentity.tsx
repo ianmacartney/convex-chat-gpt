@@ -1,6 +1,7 @@
 import { api } from "../../convex/_generated/api";
 import { useAction } from "convex/react";
 import { useState } from "react";
+import { OrSignIn } from "./OrSignIn";
 
 export function AddIdentity() {
   const addIdentity = useAction(api.openai.moderateIdentity);
@@ -41,11 +42,13 @@ export function AddIdentity() {
             rows={2}
             cols={40}
           />
-          <input
-            type="submit"
-            value="Add Identity"
-            disabled={loading || !newIdentityName || !newIdentityInstructions}
-          />
+          <OrSignIn>
+            <input
+              type="submit"
+              value="Add Identity"
+              disabled={loading || !newIdentityName || !newIdentityInstructions}
+            />
+          </OrSignIn>
         </form>
       </details>
     </section>
